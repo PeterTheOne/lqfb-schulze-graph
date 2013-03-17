@@ -45,6 +45,34 @@ var nodes = [
         velocityY: 0,
         radius: 10
     },
+    {
+        x: 0,
+        y: 0,
+        velocityX: 0,
+        velocityY: 0,
+        radius: 10
+    },
+    {
+        x: 0,
+        y: 0,
+        velocityX: 0,
+        velocityY: 0,
+        radius: 10
+    },
+    {
+        x: 0,
+        y: 0,
+        velocityX: 0,
+        velocityY: 0,
+        radius: 10
+    },
+    {
+        x: 0,
+        y: 0,
+        velocityX: 0,
+        velocityY: 0,
+        radius: 10
+    },
 ];
 
 var edges = [
@@ -78,17 +106,17 @@ function update() {
                 var distance = Math.sqrt(dX * dX + dY * dY);
 
                 // attract
-                var attractFactor = 0.01;
+                /*var attractFactor = 0.01;
                 nodes[index].velocityX += -dX * attractFactor;
                 nodes[index].velocityY += -dY * attractFactor;
                 nodes[index2].velocityX += dX * attractFactor;
-                nodes[index2].velocityY += dY * attractFactor;
+                nodes[index2].velocityY += dY * attractFactor;*/
 
                 // disperse
-                nodes[index].velocityX += dX / distance;
-                nodes[index].velocityY += dY / distance;
-                nodes[index2].velocityX += -dX / distance;
-                nodes[index2].velocityY += -dY / distance;
+                nodes[index].velocityX += dX / (10 * distance);
+                nodes[index].velocityY += dY / (10 * distance);
+                nodes[index2].velocityX += -dX / (10 * distance);
+                nodes[index2].velocityY += -dY / (10 * distance);
             }
         });
     });
@@ -147,13 +175,18 @@ function update() {
             nodes[index].velocityY = 0;
         }
 
-        // attract to middle of display
         var dX = nodes[index].x - displayWidth / 2;
         var dY = nodes[index].y - displayHeight / 2;
         var distance = Math.sqrt(dX * dX + dY * dY);
 
-        nodes[index].velocityX -= dX / (10 * distance);
-        nodes[index].velocityY -= dY / (10 * distance);
+        // attract to middle
+        var attractFactor = 0.03;
+        nodes[index].velocityX -= dX * attractFactor;
+        nodes[index].velocityY -= dY * attractFactor;
+
+        // disperse from middle
+        nodes[index].velocityX += dX / distance;
+        nodes[index].velocityY += dY / distance;
     });
 }
 
