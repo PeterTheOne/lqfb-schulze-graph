@@ -69,7 +69,7 @@ $(function() {
 });
 
 function update() {
-    // calculate force between nodes
+    // calculate force between ALL nodes
     $.each(nodes, function(index) {
         $.each(nodes, function(index2) {
             if (index != index2) {
@@ -92,6 +92,32 @@ function update() {
             }
         });
     });
+
+    // or only between nodes with edges
+    /*$.each(edges, function(index) {
+        var node1Index = edges[index].node1;
+        var node2Index = edges[index].node2;
+
+        var node1 = nodes[node1Index];
+        var node2 = nodes[node2Index];
+
+        var dX = node1.x - node2.x;
+        var dY = node1.y - node2.y;
+        var distance = Math.sqrt(dX * dX + dY * dY);
+
+        // attract
+        var attractFactor = 0.01;
+        node1.velocityX += -dX * attractFactor;
+        node1.velocityY += -dY * attractFactor;
+        node2.velocityX += dX * attractFactor;
+        node2.velocityY += dY * attractFactor;
+
+        // disperse
+        node1.velocityX += dX / distance;
+        node1.velocityY += dY / distance;
+        node2.velocityX += -dX / distance;
+        node2.velocityY += -dY / distance;
+    });*/
 
     // basis node movement
     $.each(nodes, function(index) {
