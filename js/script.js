@@ -1,8 +1,72 @@
 
 var displayWidth = 1000;
 var displayHeight = 700;
+var oldTime = undefined;
 
 var nodes = [
+    {
+        x: 0,
+        y: 0,
+        velocityX: 0,
+        velocityY: 0,
+        radius: 25
+    },
+    {
+        x: 0,
+        y: 0,
+        velocityX: 0,
+        velocityY: 0,
+        radius: 25
+    },
+    {
+        x: 0,
+        y: 0,
+        velocityX: 0,
+        velocityY: 0,
+        radius: 25
+    },
+    {
+        x: 0,
+        y: 0,
+        velocityX: 0,
+        velocityY: 0,
+        radius: 25
+    },
+    {
+        x: 0,
+        y: 0,
+        velocityX: 0,
+        velocityY: 0,
+        radius: 25
+    },
+    {
+        x: 0,
+        y: 0,
+        velocityX: 0,
+        velocityY: 0,
+        radius: 25
+    },
+    {
+        x: 0,
+        y: 0,
+        velocityX: 0,
+        velocityY: 0,
+        radius: 25
+    },
+    {
+        x: 0,
+        y: 0,
+        velocityX: 0,
+        velocityY: 0,
+        radius: 25
+    },
+    {
+        x: 0,
+        y: 0,
+        velocityX: 0,
+        velocityY: 0,
+        radius: 25
+    },
     {
         x: 0,
         y: 0,
@@ -61,14 +125,57 @@ $(function() {
         nodes[index].y = Math.random() * displayHeight;
     });
 
-    //gameloop
-    this.intervalId = setInterval(function() {
-        update();
-        render();
-    }, 1000 / 60);
+    // set requestAnimationFrame
+    // see: http://paulirish.com/2011/requestanimationframe-for-smart-animating/
+    (function() {
+        var lastTime = 0;
+        var vendors = ['webkit', 'moz'];
+        for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
+            window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
+            window.cancelAnimationFrame =
+                window[vendors[x]+'CancelAnimationFrame'] || window[vendors[x]+'CancelRequestAnimationFrame'];
+        }
+
+        if (!window.requestAnimationFrame)
+            window.requestAnimationFrame = function(callback, element) {
+                var currTime = new Date().getTime();
+                var timeToCall = Math.max(0, 16 - (currTime - lastTime));
+                var id = window.setTimeout(function() { callback(currTime + timeToCall); },
+                    timeToCall);
+                lastTime = currTime + timeToCall;
+                return id;
+            };
+
+        if (!window.cancelAnimationFrame)
+            window.cancelAnimationFrame = function(id) {
+                clearTimeout(id);
+            };
+    }());
+
+    // start game loop
+    oldTime = new Date().getTime();
+    gameLoop(oldTime);
 });
 
-function update() {
+function gameLoop(time) {
+    // calculate deltaTime
+    var deltaTime = time - oldTime;
+
+    // debug
+    //console.log(deltaTime);
+
+    // do stuff
+    update(deltaTime);
+    render();
+
+    // safe latest time in oldTime
+    oldTime = time;
+
+    // request next frame
+    window.requestAnimationFrame(gameLoop);
+}
+
+function update(dt) {
     // calculate force between ALL nodes
     $.each(nodes, function(index) {
         $.each(nodes, function(index2) {
@@ -85,10 +192,10 @@ function update() {
                 nodes[index2].velocityY += dY * attractFactor;*/
 
                 // disperse
-                nodes[index].velocityX += (20 / (0.5 * nodes.length)) * (dX / (10 * distance));
-                nodes[index].velocityY += (20 / (0.5 * nodes.length)) * (dY / (10 * distance));
-                nodes[index2].velocityX += (20 / (0.5 * nodes.length)) * (-dX / (10 * distance));
-                nodes[index2].velocityY += (20 / (0.5 * nodes.length)) * (-dY / (10 * distance));
+                nodes[index].velocityX += (4 / (0.5 * nodes.length)) * (dX / (10 * distance));
+                nodes[index].velocityY += (4 / (0.5 * nodes.length)) * (dY / (10 * distance));
+                nodes[index2].velocityX += (4 / (0.5 * nodes.length)) * (-dX / (10 * distance));
+                nodes[index2].velocityY += (4 / (0.5 * nodes.length)) * (-dY / (10 * distance));
             }
         });
     });
@@ -121,13 +228,28 @@ function update() {
 
     // basis node movement
     $.each(nodes, function(index) {
-        // add velocity to position
-        nodes[index].x += nodes[index].velocityX;
-        nodes[index].y += nodes[index].velocityY;
+        // calculate distance from middle
+        var dX = nodes[index].x - displayWidth / 2;
+        var dY = nodes[index].y - displayHeight / 2;
+        var distance = Math.sqrt(dX * dX + dY * dY);
+
+        // attract to middle
+        var attractFactor = 0.005;
+        nodes[index].velocityX -= dX * attractFactor;
+        nodes[index].velocityY -= dY * attractFactor;
+
+        // disperse from middle
+        var disperseFactor = 0.5;
+        nodes[index].velocityX += (dX / distance) * disperseFactor;
+        nodes[index].velocityY += (dY / distance) * disperseFactor;
 
         // damping
         nodes[index].velocityX *= 0.9;
         nodes[index].velocityY *= 0.9;
+
+        // add velocity to position
+        nodes[index].x += nodes[index].velocityX * dt;
+        nodes[index].y += nodes[index].velocityY * dt;
 
         // clamping on edge
         if (nodes[index].x < 0) {
@@ -146,19 +268,6 @@ function update() {
             nodes[index].y = displayHeight;
             nodes[index].velocityY = 0;
         }
-
-        var dX = nodes[index].x - displayWidth / 2;
-        var dY = nodes[index].y - displayHeight / 2;
-        var distance = Math.sqrt(dX * dX + dY * dY);
-
-        // attract to middle
-        var attractFactor = 0.03;
-        nodes[index].velocityX -= dX * attractFactor;
-        nodes[index].velocityY -= dY * attractFactor;
-
-        // disperse from middle
-        nodes[index].velocityX += dX / distance;
-        nodes[index].velocityY += dY / distance;
     });
 }
 
