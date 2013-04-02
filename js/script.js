@@ -1,6 +1,6 @@
 
-var displayWidth = 800;
-var displayHeight = 600;
+var displayWidth = 1000;
+var displayHeight = 700;
 
 var nodes = [
     {
@@ -8,70 +8,42 @@ var nodes = [
         y: 0,
         velocityX: 0,
         velocityY: 0,
-        radius: 10
+        radius: 25
     },
     {
         x: 0,
         y: 0,
         velocityX: 0,
         velocityY: 0,
-        radius: 10
+        radius: 25
     },
     {
         x: 0,
         y: 0,
         velocityX: 0,
         velocityY: 0,
-        radius: 10
+        radius: 25
     },
     {
         x: 0,
         y: 0,
         velocityX: 0,
         velocityY: 0,
-        radius: 10
+        radius: 25
     },
     {
         x: 0,
         y: 0,
         velocityX: 0,
         velocityY: 0,
-        radius: 10
+        radius: 25
     },
     {
         x: 0,
         y: 0,
         velocityX: 0,
         velocityY: 0,
-        radius: 10
-    },
-    {
-        x: 0,
-        y: 0,
-        velocityX: 0,
-        velocityY: 0,
-        radius: 10
-    },
-    {
-        x: 0,
-        y: 0,
-        velocityX: 0,
-        velocityY: 0,
-        radius: 10
-    },
-    {
-        x: 0,
-        y: 0,
-        velocityX: 0,
-        velocityY: 0,
-        radius: 10
-    },
-    {
-        x: 0,
-        y: 0,
-        velocityX: 0,
-        velocityY: 0,
-        radius: 10
+        radius: 25
     },
 ];
 
@@ -113,10 +85,10 @@ function update() {
                 nodes[index2].velocityY += dY * attractFactor;*/
 
                 // disperse
-                nodes[index].velocityX += dX / (10 * distance);
-                nodes[index].velocityY += dY / (10 * distance);
-                nodes[index2].velocityX += -dX / (10 * distance);
-                nodes[index2].velocityY += -dY / (10 * distance);
+                nodes[index].velocityX += (20 / (0.5 * nodes.length)) * (dX / (10 * distance));
+                nodes[index].velocityY += (20 / (0.5 * nodes.length)) * (dY / (10 * distance));
+                nodes[index2].velocityX += (20 / (0.5 * nodes.length)) * (-dX / (10 * distance));
+                nodes[index2].velocityY += (20 / (0.5 * nodes.length)) * (-dY / (10 * distance));
             }
         });
     });
@@ -222,8 +194,6 @@ function render() {
         var y1 = node1.y - dY * node1.radius;
         var x2 = node2.x + dX * node2.radius;
         var y2 = node2.y + dY * node2.radius;
-
-        console.log(x1);
 
         // draw line
         $('canvas').drawLine({
