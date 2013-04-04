@@ -1,7 +1,9 @@
 
 var displayWidth = 1000;
 var displayHeight = 700;
-var oldTime = undefined;
+var loopId;
+var running = true;
+var oldTime = 0;
 
 var nodes = [
     {
@@ -153,26 +155,35 @@ $(function() {
     }());
 
     // start game loop
-    oldTime = new Date().getTime();
-    gameLoop(oldTime);
+    loopId = window.requestAnimationFrame(gameLoop);
 });
 
 function gameLoop(time) {
+    if (oldTime == 0) {
+        oldTime = time;
+    }
+
     // calculate deltaTime
     var deltaTime = time - oldTime;
 
+    // safe latest time in oldTime
+    oldTime = time;
+
     // debug
     //console.log(deltaTime);
+    //var fps = 1 / (deltaTime / 1000);
+    //console.log('fps: ' + fps);
 
     // do stuff
     update(deltaTime);
     render();
 
-    // safe latest time in oldTime
-    oldTime = time;
-
     // request next frame
-    window.requestAnimationFrame(gameLoop);
+    if (running) {
+        setTimeout(function() {
+            loopId = window.requestAnimationFrame(gameLoop);
+        }, 1000 / 20);
+    }
 }
 
 function update(dt) {
@@ -226,6 +237,8 @@ function update(dt) {
         node2.velocityY += -dY / distance;
     });*/
 
+    var absVelocity = 0;
+
     // basis node movement
     $.each(nodes, function(index) {
         // calculate distance from middle
@@ -246,6 +259,10 @@ function update(dt) {
         // damping
         nodes[index].velocityX *= 0.9;
         nodes[index].velocityY *= 0.9;
+
+        // add up absVelocity
+        absVelocity += Math.abs(nodes[index].velocityX);
+        absVelocity += Math.abs(nodes[index].velocityY);
 
         // add velocity to position
         nodes[index].x += nodes[index].velocityX * dt;
@@ -269,6 +286,14 @@ function update(dt) {
             nodes[index].velocityY = 0;
         }
     });
+
+    // debug
+    //console.log(absVelocity);
+
+    // break gameLoop when velocity is low
+    if (absVelocity < 0.1) {
+        running = false;
+    }
 }
 
 function render() {
